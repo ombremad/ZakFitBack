@@ -85,7 +85,9 @@ struct UserController: RouteCollection {
             throw Abort(.notFound)
         }
         
-        patch.password = try Bcrypt.hash(user.password)
+        if let password = patch.password {
+            patch.password = try Bcrypt.hash(password)
+        }
         
         patch.apply(to: user)
         try await user.save(on: req.db)
