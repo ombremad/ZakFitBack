@@ -12,9 +12,9 @@ func routes(_ app: Application) throws {
     app.get("swagger", "swagger.json") { req in
       req.application.routes.openAPI(
         info: InfoObject(
-          title: "Example API",
-          description: "Example API description",
-          version: "0.1.0",
+          title: "ZakFit API",
+          description: "Internal API for the fitness and nutrition app ZakFit for iOS.",
+          version: "1.0.0",
         )
       )
     }
