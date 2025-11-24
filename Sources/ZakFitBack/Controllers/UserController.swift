@@ -14,11 +14,36 @@ struct UserController: RouteCollection {
         let users = routes.grouped("users")
 
         users.post("signup", use: self.signup)
+            .openAPI(
+                summary: "Create User",
+                description: "Create a new user (returns a single token)",
+                body: .type(UserCreateDTO.self)
+            )
+            .openAPINoAuth()
+
         users.post("login", use: self.login)
+            .openAPI(
+                summary: "Login User",
+                description: "Logs an existing user in (returns a single token)",
+                body: .type(LoginRequest.self)
+            )
+            .openAPINoAuth()
         
-        let protected = users.grouped(JWTMiddleware())
+        let protected = users.grouped(JWTMiddleware()).groupedOpenAPI(auth: .bearer())
         protected.get(use: self.get)
+            .openAPI(
+                summary: "Get current User",
+                description: "Returns a complete representation of the current user",
+                body: .none,
+                response: .type(UserPublicDTO.self)
+            )
         protected.patch(use: self.patch)
+            .openAPI(
+                summary: "Patch current User",
+                description: "Allows change of one or several values for the current user",
+                body: .type(UserPatchDTO.self),
+                response: .type(UserPublicDTO.self)
+            )
     }
 
     @Sendable
@@ -81,6 +106,10 @@ struct UserController: RouteCollection {
         let payload = try req.auth.require(UserPayload.self)
         var patch = try req.content.decode(UserPatchDTO.self)
         
+        if patch.isEmpty {
+            throw Abort(.badRequest, reason: "The request is empty.")
+        }
+
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }
@@ -93,5 +122,4 @@ struct UserController: RouteCollection {
         try await user.save(on: req.db)
         return user.toDTO()
     }
-
 }

@@ -23,6 +23,22 @@ struct UserPatchDTO: Content {
     let goalFats: Int?
     let goalProts: Int?
     
+    var isEmpty: Bool {
+        return firstName == nil &&
+        lastName == nil &&
+        email == nil &&
+        password == nil &&
+        birthday == nil &&
+        height == nil &&
+        weight == nil &&
+        sex == nil &&
+        bmr == nil &&
+        goalCals == nil &&
+        goalCarbs == nil &&
+        goalFats == nil &&
+        goalProts == nil
+    }
+    
     func apply(to user: User) {
         if let val = firstName { user.firstName = val }
         if let val = lastName { user.lastName = val }
