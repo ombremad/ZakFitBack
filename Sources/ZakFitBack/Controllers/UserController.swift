@@ -13,14 +13,12 @@ struct UserController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let users = routes.grouped("users")
 
-        users.get(use: self.index)
-        users.post(use: self.create)
+        users.post("signup", use: self.create)
         users.post("login", use: self.login)
-    }
-
-    @Sendable
-    func index(req: Request) async throws -> [UserDTO] {
-        try await User.query(on: req.db).all().map { $0.toDTO() }
+        
+        let protected = users.grouped(JWTMiddleware())
+        protected.get(use: self.get)
+        protected.patch(use: self.patch)
     }
 
     @Sendable
@@ -67,6 +65,31 @@ struct UserController: RouteCollection {
         let signer = JWTSigner.hs256(key: Config.shared.jwtSecret)
         let token = try signer.sign(payload)
         return ["token": token]
+    }
+    
+    @Sendable
+    func get(req: Request) async throws -> UserPublicDTO {
+        let payload = try req.auth.require(UserPayload.self)
+        guard let user = try await User.find(payload.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return user.toDTO()
+    }
+    
+    @Sendable
+    func patch(req: Request) async throws -> UserPublicDTO {
+        let payload = try req.auth.require(UserPayload.self)
+        var patch = try req.content.decode(UserPatchDTO.self)
+        
+        guard let user = try await User.find(payload.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        patch.password = try Bcrypt.hash(user.password)
+        
+        patch.apply(to: user)
+        try await user.save(on: req.db)
+        return user.toDTO()
     }
 
 }

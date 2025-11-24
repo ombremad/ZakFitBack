@@ -69,7 +69,7 @@ final class User: Model, @unchecked Sendable {
         self.goalCarbs = goalCarbs
     }
         
-    func toDTO() -> UserDTO {
+    func toDTO() -> UserPublicDTO {
         .init(
             id: self.id,
             firstName: self.firstName,
