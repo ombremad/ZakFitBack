@@ -62,6 +62,13 @@
             ReferencedContainer = "container:">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "JWT_SECRET"
+            value = "Une cl&#xe9; pas si secr&#xe8;te"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
