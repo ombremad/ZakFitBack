@@ -9,8 +9,17 @@ import Vapor
 import Fluent
 
 struct UserPublicDTO: Content {
-    var id: UUID?
-    var firstName: String
-    var lastName: String
-    var email: String
+    let id: UUID?
+    let firstName: String
+    let lastName: String
+    let email: String
+    let birthday: Date
+    let height: Int
+    let weight: Int
+    let sex: Bool
+    let bmr: Int
+    let goalCals: Int
+    let goalCarbs: Int
+    let goalFats: Int
+    let goalProts: Int
 }

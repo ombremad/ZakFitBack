@@ -13,7 +13,7 @@ struct UserController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let users = routes.grouped("users")
 
-        users.post("signup", use: self.create)
+        users.post("signup", use: self.signup)
         users.post("login", use: self.login)
         
         let protected = users.grouped(JWTMiddleware())
@@ -22,7 +22,7 @@ struct UserController: RouteCollection {
     }
 
     @Sendable
-    func create(req: Request) async throws -> [String: String] {
+    func signup(req: Request) async throws -> [String: String] {
         var user = try req.content.decode(UserCreateDTO.self)
         
         // Hash password

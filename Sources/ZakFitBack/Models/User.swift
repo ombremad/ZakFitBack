@@ -74,7 +74,16 @@ final class User: Model, @unchecked Sendable {
             id: self.id,
             firstName: self.firstName,
             lastName: self.lastName,
-            email: self.email
+            email: self.email,
+            birthday: self.birthday,
+            height: self.height,
+            weight: self.weight,
+            sex: self.sex,
+            bmr: self.bmr,
+            goalCals: self.goalCals,
+            goalCarbs: self.goalCarbs,
+            goalFats: self.goalFats,
+            goalProts: self.goalProts
         )
     }
 }
