@@ -17,7 +17,8 @@ struct UserController: RouteCollection {
             .openAPI(
                 summary: "Create User",
                 description: "Create a new user (returns a single token)",
-                body: .type(UserCreateDTO.self)
+                body: .type(UserCreateDTO.self),
+                response: .type(TokenDTO.self)
             )
             .openAPINoAuth()
 
@@ -25,7 +26,8 @@ struct UserController: RouteCollection {
             .openAPI(
                 summary: "Login User",
                 description: "Logs an existing user in (returns a single token)",
-                body: .type(LoginRequest.self)
+                body: .type(LoginRequest.self),
+                response: .type(TokenDTO.self)
             )
             .openAPINoAuth()
         
@@ -47,7 +49,7 @@ struct UserController: RouteCollection {
     }
 
     @Sendable
-    func signup(req: Request) async throws -> [String: String] {
+    func signup(req: Request) async throws -> TokenDTO {
         var user = try req.content.decode(UserCreateDTO.self)
         
         // Hash password
@@ -57,7 +59,7 @@ struct UserController: RouteCollection {
         let newUser = user.toModel()
         try await newUser.save(on: req.db)
         
-        // Mandatory check if user id exists
+        // Check if user id was properly generated
         guard let userID = newUser.id else {
             throw Abort(.internalServerError, reason: "User ID missing after creation.")
         }
@@ -66,11 +68,11 @@ struct UserController: RouteCollection {
         let payload = UserPayload(id: userID)
         let signer = JWTSigner.hs256(key: Config.shared.jwtSecret)
         let token = try signer.sign(payload)
-        return ["token": token]
+        return TokenDTO(token)
     }
     
     @Sendable
-    func login(req: Request) async throws -> [String: String] {
+    func login(req: Request) async throws -> TokenDTO {
         let userData = try req.content.decode(LoginRequest.self)
         
         // Search user by email
@@ -89,7 +91,7 @@ struct UserController: RouteCollection {
         let payload = UserPayload(id: user.id!)
         let signer = JWTSigner.hs256(key: Config.shared.jwtSecret)
         let token = try signer.sign(payload)
-        return ["token": token]
+        return TokenDTO(token)
     }
     
     @Sendable
