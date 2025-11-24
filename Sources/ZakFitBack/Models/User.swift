@@ -20,13 +20,13 @@ final class User: Model, @unchecked Sendable {
     @Field(key: "is_admin") var isAdmin: Bool
     @Field(key: "birthday") var birthday: Date
     @Field(key: "height") var height: Int
-    @Field(key: "weight") var width: Int
+    @Field(key: "weight") var weight: Int
     @Field(key: "sex") var sex: Bool
     @Field(key: "bmr") var bmr: Int
-    @Field(key: "goal_cals") var goal_cals: Int
-    @Field(key: "goal_carbs") var goal_carbs: Int
-    @Field(key: "goal_fats") var goal_fats: Int
-    @Field(key: "goal_prots") var goal_prots: Int
+    @Field(key: "goal_cals") var goalCals: Int
+    @Field(key: "goal_carbs") var goalCarbs: Int
+    @Field(key: "goal_fats") var goalFats: Int
+    @Field(key: "goal_prots") var goalProts: Int
     
     @Siblings(through: UserRestrictionPivot.self, from: \.$user, to: \.$restrictionType) var restrictionTypes: [RestrictionType]
     @Children(for: \.$user) var exercises: [Exercise]
@@ -34,4 +34,47 @@ final class User: Model, @unchecked Sendable {
     @Children(for: \.$user) var meals: [Meal]
     
     init() {}
+
+    init(
+        id: UUID? = UUID(),
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String,
+        isAdmin: Bool,
+        birthday: Date,
+        height: Int,
+        weight: Int,
+        sex: Bool,
+        bmr: Int,
+        goalCals: Int,
+        goalCarbs: Int,
+        goalFats: Int,
+        goalProts: Int
+    ) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.password = password
+        self.isAdmin = isAdmin
+        self.birthday = birthday
+        self.height = height
+        self.weight = weight
+        self.sex = sex
+        self.bmr = bmr
+        self.goalCals = goalCals
+        self.goalFats = goalFats
+        self.goalProts = goalProts
+        self.goalCarbs = goalCarbs
+    }
+        
+    func toDTO() -> UserPublicDTO {
+        .init(
+            id: self.id,
+            firstName: self.firstName,
+            lastName: self.lastName,
+            email: self.email
+        )
+    }
 }

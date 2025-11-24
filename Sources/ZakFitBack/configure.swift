@@ -7,6 +7,7 @@ import Vapor
 public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    
 
     app.databases.use(DatabaseConfigurationFactory.mysql(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
@@ -15,7 +16,15 @@ public func configure(_ app: Application) async throws {
         password: Environment.get("DATABASE_PASSWORD") ?? "",
         database: Environment.get("DATABASE_NAME") ?? "zakfit"
     ), as: .mysql)
-    
+        
     // register routes
     try routes(app)
 }
+
+struct Config {
+    static let shared = Config()
+    
+    // Get JWT secret key from schemes if available
+    let jwtSecret = Environment.get("JWT_SECRET") ?? "mysecretkey"
+}
+
