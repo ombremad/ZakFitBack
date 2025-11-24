@@ -16,7 +16,7 @@ struct UserController: RouteCollection {
         users.post("signup", use: self.signup)
             .openAPI(
                 summary: "Create User",
-                description: "Create a new user (returns a single token)",
+                description: "Create a new user",
                 body: .type(UserCreateDTO.self),
                 response: .type(TokenDTO.self)
             )
@@ -25,7 +25,7 @@ struct UserController: RouteCollection {
         users.post("login", use: self.login)
             .openAPI(
                 summary: "Login User",
-                description: "Logs an existing user in (returns a single token)",
+                description: "Logs an existing user in",
                 body: .type(LoginRequest.self),
                 response: .type(TokenDTO.self)
             )

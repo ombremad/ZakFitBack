@@ -43,4 +43,3 @@ struct Config {
     // Get JWT secret key from schemes if available
     let jwtSecret = Environment.get("JWT_SECRET") ?? "mysecretkey"
 }
-
