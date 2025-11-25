@@ -19,4 +19,11 @@ final class RestrictionType: Model, @unchecked Sendable {
     @Siblings(through: FoodRestrictionPivot.self, from: \.$restrictionType, to: \.$foodType) var foodTypes: [FoodType]
     
     init() {}
+    
+    func toDTO() -> RestrictionTypeDTO {
+        .init(
+            id: self.id,
+            name: self.name
+        )
+    }
 }
