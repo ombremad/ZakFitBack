@@ -21,5 +21,6 @@ func routes(_ app: Application) throws {
     .excludeFromOpenAPI()
 
     try app.register(collection: UserController())
+    try app.register(collection: MealTypeController())
     try app.register(collection: RestrictionTypeController())
 }

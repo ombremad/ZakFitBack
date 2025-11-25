@@ -46,16 +46,14 @@ struct RestrictionTypeController: RouteCollection {
     
     @Sendable
     func create(req: Request) async throws -> RestrictionTypeDTO {
-        let payload = try req.auth.require(UserPayload.self)
-        
         // Check if user is admin
+        let payload = try req.auth.require(UserPayload.self)
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }
         guard user.isAdmin == true else {
             throw Abort(.unauthorized)
         }
-        
         
         let newType = try req.content.decode(RestrictionTypeDTO.self).toModel()
         try await newType.save(on: req.db)
@@ -64,9 +62,8 @@ struct RestrictionTypeController: RouteCollection {
     
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
-        let payload = try req.auth.require(UserPayload.self)
-
         // Check if user is admin
+        let payload = try req.auth.require(UserPayload.self)
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }

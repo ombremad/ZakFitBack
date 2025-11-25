@@ -19,4 +19,11 @@ final class MealType: Model, @unchecked Sendable {
     @Children(for: \.$mealType) var meals: [Meal]
     
     init() {}
+    
+    func toDTO() -> MealTypeDTO {
+        .init(
+            id: self.id,
+            name: self.name
+        )
+    }
 }
