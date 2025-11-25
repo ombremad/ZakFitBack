@@ -11,7 +11,7 @@ import Fluent
 final class UserRestrictionPivot: Model, @unchecked Sendable {
     static let schema = "user_restriction"
     
-    @ID(custom: "id", generatedBy: .user) var id: UUID?
+    @ID(key: .id) var id: UUID?
     @Parent(key: "id_user") var user: User
     @Parent(key: "id_restriction_type") var restrictionType: RestrictionType
     

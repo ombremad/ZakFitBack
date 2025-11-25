@@ -11,7 +11,7 @@ import Fluent
 final class FoodRestrictionPivot: Model, @unchecked Sendable {
     static let schema = "food_restriction"
     
-    @ID(custom: "id", generatedBy: .user) var id: UUID?
+    @ID(key: .id) var id: UUID?
     @Parent(key: "id_food_type") var foodType: FoodType
     @Parent(key: "id_restriction_type") var restrictionType: RestrictionType
     

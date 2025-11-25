@@ -50,18 +50,26 @@ struct UserController: RouteCollection {
 
     @Sendable
     func signup(req: Request) async throws -> TokenDTO {
-        var user = try req.content.decode(UserCreateDTO.self)
+        var userDTO = try req.content.decode(UserCreateDTO.self)
         
         // Hash password
-        user.password = try Bcrypt.hash(user.password)
+        userDTO.password = try Bcrypt.hash(userDTO.password)
         
         // Get new user with generated UUID and save in database
-        let newUser = user.toModel()
+        let newUser = userDTO.toModel()
         try await newUser.save(on: req.db)
         
         // Check if user id was properly generated
         guard let userID = newUser.id else {
             throw Abort(.internalServerError, reason: "User ID missing after creation.")
+        }
+        
+        // Handle restriction types
+        if !userDTO.restrictionTypeIds.isEmpty {
+            let restrictionTypes = try await RestrictionType.query(on: req.db)
+                .filter(\.$id ~~ userDTO.restrictionTypeIds)
+                .all()
+            try await newUser.$restrictionTypes.attach(restrictionTypes, on: req.db)
         }
         
         // Create JWT and return token
@@ -100,9 +108,11 @@ struct UserController: RouteCollection {
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }
+        try await user.$restrictionTypes.load(on: req.db)
+
         return user.toDTO()
     }
-    
+
     @Sendable
     func patch(req: Request) async throws -> UserPublicDTO {
         let payload = try req.auth.require(UserPayload.self)
@@ -122,6 +132,19 @@ struct UserController: RouteCollection {
         
         patch.apply(to: user)
         try await user.save(on: req.db)
+        
+        if let restrictionTypeIds = patch.restrictionTypeIds {
+            try await user.$restrictionTypes.load(on: req.db)
+            try await user.$restrictionTypes.detach(user.restrictionTypes, on: req.db)
+            if !restrictionTypeIds.isEmpty {
+                let restrictionTypes = try await RestrictionType.query(on: req.db)
+                    .filter(\.$id ~~ restrictionTypeIds)
+                    .all()
+                try await user.$restrictionTypes.attach(restrictionTypes, on: req.db)
+            }
+        }
+        try await user.$restrictionTypes.load(on: req.db)
+
         return user.toDTO()
     }
 }

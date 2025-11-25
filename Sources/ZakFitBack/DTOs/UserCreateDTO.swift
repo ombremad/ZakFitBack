@@ -22,6 +22,7 @@ struct UserCreateDTO: Content {
     var goalCarbs: Int
     var goalFats: Int
     var goalProts: Int
+    var restrictionTypeIds: [UUID]
     
     func toModel() -> User {
         let model = User()

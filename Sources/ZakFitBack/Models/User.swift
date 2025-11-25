@@ -83,7 +83,8 @@ final class User: Model, @unchecked Sendable {
             goalCals: self.goalCals,
             goalCarbs: self.goalCarbs,
             goalFats: self.goalFats,
-            goalProts: self.goalProts
+            goalProts: self.goalProts,
+            restrictionTypes: self.restrictionTypes.map { $0.toDTO() }
         )
     }
 }
