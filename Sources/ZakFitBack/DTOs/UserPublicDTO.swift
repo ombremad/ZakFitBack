@@ -23,5 +23,4 @@ struct UserPublicDTO: Content {
     let goalCarbs: Int
     let goalFats: Int
     let goalProts: Int
-    let restrictionTypes: [RestrictionTypeDTO]
 }

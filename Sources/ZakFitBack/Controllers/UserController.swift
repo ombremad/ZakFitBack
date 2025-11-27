@@ -108,7 +108,7 @@ struct UserController: RouteCollection {
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        try await user.$restrictionTypes.load(on: req.db)
+//        try await user.$restrictionTypes.load(on: req.db)
 
         return user.toDTO()
     }
@@ -133,17 +133,17 @@ struct UserController: RouteCollection {
         patch.apply(to: user)
         try await user.save(on: req.db)
         
-        if let restrictionTypeIds = patch.restrictionTypeIds {
-            try await user.$restrictionTypes.load(on: req.db)
-            try await user.$restrictionTypes.detach(user.restrictionTypes, on: req.db)
-            if !restrictionTypeIds.isEmpty {
-                let restrictionTypes = try await RestrictionType.query(on: req.db)
-                    .filter(\.$id ~~ restrictionTypeIds)
-                    .all()
-                try await user.$restrictionTypes.attach(restrictionTypes, on: req.db)
-            }
-        }
-        try await user.$restrictionTypes.load(on: req.db)
+//        if let restrictionTypeIds = patch.restrictionTypeIds {
+//            try await user.$restrictionTypes.load(on: req.db)
+//            try await user.$restrictionTypes.detach(user.restrictionTypes, on: req.db)
+//            if !restrictionTypeIds.isEmpty {
+//                let restrictionTypes = try await RestrictionType.query(on: req.db)
+//                    .filter(\.$id ~~ restrictionTypeIds)
+//                    .all()
+//                try await user.$restrictionTypes.attach(restrictionTypes, on: req.db)
+//            }
+//        }
+//        try await user.$restrictionTypes.load(on: req.db)
 
         return user.toDTO()
     }
