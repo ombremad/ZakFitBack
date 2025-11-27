@@ -23,6 +23,7 @@ final class User: Model, @unchecked Sendable {
     @Field(key: "weight") var weight: Int
     @Field(key: "sex") var sex: Bool
     @Field(key: "bmr") var bmr: Int
+    @Field(key: "physical_activity") var physicalActivity: Int
     @Field(key: "goal_cals") var goalCals: Int
     @Field(key: "goal_carbs") var goalCarbs: Int
     @Field(key: "goal_fats") var goalFats: Int
@@ -47,6 +48,7 @@ final class User: Model, @unchecked Sendable {
         weight: Int,
         sex: Bool,
         bmr: Int,
+        physicalActivity: Int,
         goalCals: Int,
         goalCarbs: Int,
         goalFats: Int,
@@ -63,6 +65,7 @@ final class User: Model, @unchecked Sendable {
         self.weight = weight
         self.sex = sex
         self.bmr = bmr
+        self.physicalActivity = physicalActivity
         self.goalCals = goalCals
         self.goalFats = goalFats
         self.goalProts = goalProts
@@ -80,6 +83,7 @@ final class User: Model, @unchecked Sendable {
             weight: self.weight,
             sex: self.sex,
             bmr: self.bmr,
+            physicalActivity: self.physicalActivity,
             goalCals: self.goalCals,
             goalCarbs: self.goalCarbs,
             goalFats: self.goalFats,

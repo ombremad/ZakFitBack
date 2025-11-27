@@ -18,6 +18,7 @@ struct UserCreateDTO: Content {
     var weight: Int
     var sex: Bool
     var bmr: Int
+    var physicalActivity: Int
     var goalCals: Int
     var goalCarbs: Int
     var goalFats: Int
@@ -38,6 +39,7 @@ struct UserCreateDTO: Content {
         model.weight = weight
         model.sex = sex
         model.bmr = bmr
+        model.physicalActivity = physicalActivity
         model.goalCals = goalCals
         model.goalCarbs = goalCarbs
         model.goalFats = goalFats

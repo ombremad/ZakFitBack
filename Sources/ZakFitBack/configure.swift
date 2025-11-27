@@ -32,7 +32,18 @@ public func configure(_ app: Application) async throws {
     app.middleware.use(CORSMiddleware(configuration: corsConfiguration))
     app.gatekeeper.config = .init(maxRequests: 60, per: .minute)
     app.middleware.use(GatekeeperMiddleware())
-        
+    
+    // MARK: JSON strategies
+    let encoder = JSONEncoder()
+    encoder.keyEncodingStrategy = .convertToSnakeCase
+    encoder.dateEncodingStrategy = .iso8601
+    ContentConfiguration.global.use(encoder: encoder, for: .json)
+    
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    decoder.dateDecodingStrategy = .iso8601
+    ContentConfiguration.global.use(decoder: decoder, for: .json)
+    
     // MARK: Routes
     try routes(app)
 }
