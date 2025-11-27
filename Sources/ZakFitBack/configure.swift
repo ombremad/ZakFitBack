@@ -3,11 +3,9 @@ import Fluent
 import FluentMySQLDriver
 import Vapor
 import Gatekeeper
+import VaporToOpenAPI
 
 public func configure(_ app: Application) async throws {
-    // uncomment to serve files from /Public folder
-    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-
     // MARK: MySQL configuration
     app.databases.use(DatabaseConfigurationFactory.mysql(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
@@ -35,7 +33,7 @@ public func configure(_ app: Application) async throws {
     
     // MARK: JSON strategies
     let encoder = JSONEncoder()
-    encoder.keyEncodingStrategy = .convertToSnakeCase
+//    encoder.keyEncodingStrategy = .convertToSnakeCase
     encoder.dateEncodingStrategy = .iso8601
     ContentConfiguration.global.use(encoder: encoder, for: .json)
     
