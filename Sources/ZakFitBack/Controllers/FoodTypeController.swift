@@ -24,11 +24,12 @@ struct FoodTypeController: RouteCollection {
             )
         protected.post(use: self.create)
             .openAPI(
-                summary: "Create food type",
-                description: "Create a new food type (admins only)",
-                body: .type(FoodTypeCreateDTO.self),
-                response: .type(FoodTypeResponseDTO.self)
+                summary: "Create food types",
+                description: "Create new food types, as bulk in an array (admins only)",
+                body: .type([FoodTypeCreateDTO].self),
+                response: .type([FoodTypeResponseDTO].self)
             )
+        
         protected.group(":foodTypeID") { foodType in
             foodType.get(use: self.get)
                 .openAPI(
@@ -90,12 +91,12 @@ struct FoodTypeController: RouteCollection {
             }
         }
         
-        let foodTypes = try await query.all()
+        let foodTypes = try await query.sort(\.$name).all()
         return foodTypes.map { FoodTypeListItemDTO(from: $0) }
     }
         
     @Sendable
-    func create(req: Request) async throws -> FoodTypeResponseDTO {
+    func create(req: Request) async throws -> [FoodTypeResponseDTO] {
         // Check if user is admin
         let payload = try req.auth.require(UserPayload.self)
         guard let user = try await User.find(payload.id, on: req.db) else {
@@ -105,18 +106,23 @@ struct FoodTypeController: RouteCollection {
             throw Abort(.forbidden)
         }
         
-        let dto = try req.content.decode(FoodTypeCreateDTO.self)
-        let foodType = try await dto.toModel(on: req.db)
+        let dtos = try req.content.decode([FoodTypeCreateDTO].self)
         
-        // Load relationships for response
-        try await foodType.$mealTypes.load(on: req.db)
-        try await foodType.$restrictionTypes.load(on: req.db)
+        var foodTypes: [FoodTypeResponseDTO] = []
+        for dto in dtos {
+            let foodType = try await dto.toModel(on: req.db)
+            
+            try await foodType.$mealTypes.load(on: req.db)
+            try await foodType.$restrictionTypes.load(on: req.db)
+            
+            foodTypes.append(FoodTypeResponseDTO(
+                from: foodType,
+                mealTypes: foodType.mealTypes,
+                restrictionTypes: foodType.restrictionTypes
+            ))
+        }
         
-        return FoodTypeResponseDTO(
-            from: foodType,
-            mealTypes: foodType.mealTypes,
-            restrictionTypes: foodType.restrictionTypes
-        )
+        return foodTypes
     }
     
     @Sendable

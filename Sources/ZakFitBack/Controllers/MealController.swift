@@ -54,6 +54,7 @@ struct MealController: RouteCollection {
         let meals = try await Meal.query(on: req.db)
             .filter(\.$user.$id == user.id!)
             .with(\.$mealType)
+            .sort(\.$date, .descending)
             .all()
 
         return meals.map { $0.toListItemDTO() }

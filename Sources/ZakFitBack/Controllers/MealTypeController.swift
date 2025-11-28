@@ -40,7 +40,10 @@ struct MealTypeController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [MealTypeDTO] {
-        return try await MealType.query(on: req.db).all().map { $0.toDTO() }
+        return try await MealType.query(on: req.db)
+            .sort(\.$name)
+            .all()
+            .map { $0.toDTO() }
     }
     
     @Sendable

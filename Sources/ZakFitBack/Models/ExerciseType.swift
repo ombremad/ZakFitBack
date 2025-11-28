@@ -22,4 +22,14 @@ final class ExerciseType: Model, @unchecked Sendable {
     @Children(for: \.$exerciseType) var goalExercises: [GoalExercise]
     
     init() {}
+    
+    func toDTO() -> ExerciseTypeResponseDTO {
+        .init(
+            id: self.id!,
+            name: self.name,
+            icon: self.icon,
+            calsPerMinute: self.calsPerMinute,
+            level: self.level
+        )
+    }
 }

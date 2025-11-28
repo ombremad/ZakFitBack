@@ -41,7 +41,10 @@ struct RestrictionTypeController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [RestrictionTypeDTO] {
-        try await RestrictionType.query(on: req.db).all().map { $0.toDTO() }
+        try await RestrictionType.query(on: req.db)
+            .sort(\.$name)
+            .all()
+            .map { $0.toDTO() }
     }
     
     @Sendable
