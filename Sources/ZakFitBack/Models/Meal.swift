@@ -14,11 +14,30 @@ final class Meal: Model, @unchecked Sendable {
     @ID(key: .id) var id: UUID?
     
     @Field(key: "date") var date: Date
-    @Field(key: "carbs") var carbs: Int
+    @Field(key: "cals") var cals: Int
     
     @Parent(key: "id_user") var user: User
     @Parent(key: "id_meal_type") var mealType: MealType
     @Children(for: \.$meal) var foods: [Food]
     
     init() {}
+    
+    func toDTO() -> MealResponseDTO {
+        .init(
+            id: self.id!,
+            date: self.date,
+            cals: self.cals,
+            mealType: self.mealType.toDTO(),
+            foods: self.foods.map { $0.toDTO() }
+        )
+    }
+    
+    func toListItemDTO() -> MealListItemDTO {
+        .init(
+            id: self.id!,
+            date: self.date,
+            cals: self.cals,
+            mealTypeName: self.mealType.name
+        )
+    }
 }

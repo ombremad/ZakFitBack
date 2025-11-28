@@ -20,4 +20,12 @@ final class Food: Model, @unchecked Sendable {
     @Parent(key: "id_meal") var meal: Meal
     
     init() {}
+    
+    func toDTO() -> FoodResponseDTO {
+        .init(
+            id: self.id!,
+            weight: self.weight,
+            quantity: self.quantity
+        )
+    }
 }

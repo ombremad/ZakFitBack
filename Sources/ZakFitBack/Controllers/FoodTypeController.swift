@@ -102,7 +102,7 @@ struct FoodTypeController: RouteCollection {
             throw Abort(.notFound)
         }
         guard user.isAdmin == true else {
-            throw Abort(.unauthorized)
+            throw Abort(.forbidden)
         }
         
         let dto = try req.content.decode(FoodTypeCreateDTO.self)
@@ -138,7 +138,7 @@ struct FoodTypeController: RouteCollection {
             throw Abort(.notFound)
         }
         guard user.isAdmin == true else {
-            throw Abort(.unauthorized)
+            throw Abort(.forbidden)
         }
 
         guard let foodType = try await FoodType.find(req.parameters.get("foodTypeID"), on: req.db) else {

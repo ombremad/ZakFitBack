@@ -52,7 +52,7 @@ struct RestrictionTypeController: RouteCollection {
             throw Abort(.notFound)
         }
         guard user.isAdmin == true else {
-            throw Abort(.unauthorized)
+            throw Abort(.forbidden)
         }
         
         let newType = try req.content.decode(RestrictionTypeDTO.self).toModel()
@@ -68,7 +68,7 @@ struct RestrictionTypeController: RouteCollection {
             throw Abort(.notFound)
         }
         guard user.isAdmin == true else {
-            throw Abort(.unauthorized)
+            throw Abort(.forbidden)
         }
 
         guard let type = try await RestrictionType.find(req.parameters.get("restrictionTypeID"), on: req.db) else {
