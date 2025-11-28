@@ -8,6 +8,7 @@
 import Vapor
 import Fluent
 import JWT
+import VaporToOpenAPI
 
 struct FoodTypeController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
@@ -17,7 +18,8 @@ struct FoodTypeController: RouteCollection {
         protected.get(use: self.index)
             .openAPI(
                 summary: "Get food types",
-                description: "Get a list of all meal types available in the app. Arguments can be passed to filter.",
+                description: "Get a list of all food types available in the app.",
+                query: .type(FoodTypeQuery.self),
                 response: .type([FoodTypeListItemDTO].self)
             )
         protected.post(use: self.create)
@@ -31,11 +33,13 @@ struct FoodTypeController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [FoodTypeListItemDTO] {
-        let mealTypeFilters = (req.query[[String].self, at: "mealTypes"] ?? [])
-            .map { $0.removingPercentEncoding ?? $0 }
-        let restrictionTypeFilters = (req.query[[String].self, at: "restrictionTypes"] ?? [])
-            .map { $0.removingPercentEncoding ?? $0 }
+        let queryParams = try req.query.decode(FoodTypeQuery.self)
         
+        let mealTypeFilters = (queryParams.mealTypes ?? [])
+            .map { $0.removingPercentEncoding ?? $0 }
+        let restrictionTypeFilters = (queryParams.restrictionTypes ?? [])
+            .map { $0.removingPercentEncoding ?? $0 }
+
         var query = FoodType.query(on: req.db)
         
         // Filter: include any of the meal types
