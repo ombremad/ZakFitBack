@@ -18,7 +18,7 @@ struct FoodTypeController: RouteCollection {
         protected.get(use: self.index)
             .openAPI(
                 summary: "Get food types",
-                description: "Get a list of all food types available in the app.",
+                description: "Get a list of all food types available",
                 query: .type(FoodTypeQuery.self),
                 response: .type([FoodTypeListItemDTO].self)
             )
@@ -29,6 +29,20 @@ struct FoodTypeController: RouteCollection {
                 body: .type(FoodTypeCreateDTO.self),
                 response: .type(FoodTypeResponseDTO.self)
             )
+        protected.group(":foodTypeID") { foodType in
+            foodType.get(use: self.get)
+                .openAPI(
+                    summary: "Get a food type",
+                    description: "Get all details on a single food type",
+                    response: .type(FoodTypeResponseDTO.self)
+                )
+            foodType.delete(use: self.delete)
+                .openAPI(
+                    summary: "Delete food type",
+                    description: "Delete a food type by ID (admins only)",
+                    response: .type(HTTPStatus.self)
+                )
+        }
     }
     
     @Sendable
@@ -79,7 +93,7 @@ struct FoodTypeController: RouteCollection {
         let foodTypes = try await query.all()
         return foodTypes.map { FoodTypeListItemDTO(from: $0) }
     }
-    
+        
     @Sendable
     func create(req: Request) async throws -> FoodTypeResponseDTO {
         // Check if user is admin
@@ -104,5 +118,34 @@ struct FoodTypeController: RouteCollection {
             restrictionTypes: foodType.restrictionTypes
         )
     }
+    
+    @Sendable
+    func get(req: Request) async throws -> FoodTypeResponseDTO {
+        guard let foodType = try await FoodType.find(req.parameters.get("foodTypeID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        try await foodType.$mealTypes.load(on: req.db)
+        try await foodType.$restrictionTypes.load(on: req.db)
+        return foodType.toDTO(with: foodType.mealTypes, restrictionTypes: foodType.restrictionTypes)
+    }
+    
+    @Sendable
+    func delete(req: Request) async throws -> HTTPStatus {
+        // Check if user is admin
+        let payload = try req.auth.require(UserPayload.self)
+        guard let user = try await User.find(payload.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        guard user.isAdmin == true else {
+            throw Abort(.unauthorized)
+        }
 
+        guard let foodType = try await FoodType.find(req.parameters.get("foodTypeID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+
+        try await foodType.delete(on: req.db)
+        return .noContent
+    }
 }

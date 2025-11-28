@@ -18,10 +18,9 @@ struct MealTypeController: RouteCollection {
         protected.get(use: self.index)
             .openAPI(
                 summary: "Get meal types",
-                description: "Get a list of all meal types available in the app",
+                description: "Get a list of all meal types available",
                 response: .type([MealTypeDTO].self)
             )
-        
         protected.post(use: self.create)
             .openAPI(
                 summary: "Create meal type",

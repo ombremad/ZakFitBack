@@ -34,14 +34,14 @@ struct UserController: RouteCollection {
         let protected = users.grouped(JWTMiddleware()).groupedOpenAPI(auth: .bearer())
         protected.get(use: self.get)
             .openAPI(
-                summary: "Get current User",
+                summary: "Get current user",
                 description: "Returns a complete representation of the current user",
                 body: .none,
                 response: .type(UserPublicDTO.self)
             )
         protected.patch(use: self.patch)
             .openAPI(
-                summary: "Patch current User",
+                summary: "Patch current user",
                 description: "Allows change of one or several values for the current user",
                 body: .type(UserPatchDTO.self),
                 response: .type(UserPublicDTO.self)

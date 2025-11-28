@@ -11,9 +11,11 @@ import Fluent
 struct FoodTypeListItemDTO: Content {
     let id: UUID
     let name: String
+    let weightPerServing: Int?
     
     init(from foodType: FoodType) {
         self.id = foodType.id!
         self.name = foodType.name
+        self.weightPerServing = foodType.weightPerServing
     }
 }

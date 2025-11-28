@@ -25,4 +25,8 @@ final class FoodType: Model, @unchecked Sendable {
     @Children(for: \.$foodType) var foods: [Food]
     
     init() {}
+    
+    func toDTO(with mealTypes: [MealType] = [], restrictionTypes: [RestrictionType] = []) -> FoodTypeResponseDTO {
+        .init(from: self, mealTypes: mealTypes, restrictionTypes: restrictionTypes)
+    }
 }
