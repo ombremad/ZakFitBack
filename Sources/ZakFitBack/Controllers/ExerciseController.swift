@@ -66,11 +66,11 @@ struct ExerciseController: RouteCollection {
         }
         
         // Filter by length
-        if let lengthMin = queryParams.lengthMin {
-            query = query.filter(\.$length >= lengthMin)
+        if let minLength = queryParams.minLength {
+            query = query.filter(\.$length >= minLength)
         }
-        if let lengthMax = queryParams.lengthMax {
-            query = query.filter(\.$length <= lengthMax)
+        if let maxLength = queryParams.maxLength {
+            query = query.filter(\.$length <= maxLength)
         }
         
         // Apply sorting

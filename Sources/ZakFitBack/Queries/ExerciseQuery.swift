@@ -18,10 +18,10 @@ struct ExerciseQuery: Content {
     var exerciseType: UUID?
     
     // Filter exercises with at least this many minutes
-    var lengthMin: Int?
+    var minLength: Int?
     
     // Filter exercises with at most this many minutes
-    var lengthMax: Int?
+    var maxLength: Int?
     
     // Sort type: accepts date, length, or activityType
     var sortBy: String?
