@@ -85,7 +85,7 @@ struct ExerciseController: RouteCollection {
                 query = query
                     .sort(\.$length, sortOrder)
                     .sort(\.$date, .descending)
-            case "activityType":
+            case "exerciseType":
                 query = query
                     .join(ExerciseType.self, on: \Exercise.$exerciseType.$id == \ExerciseType.$id)
                     .sort(ExerciseType.self, \.$name, sortOrder)
