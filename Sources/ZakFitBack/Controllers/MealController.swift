@@ -19,6 +19,7 @@ struct MealController: RouteCollection {
             .openAPI(
                 summary: "Get meals",
                 description: "Get a list of all meals for user",
+                query: .type(MealQuery.self),
                 response: .type([MealListItemDTO].self)
             )
         protected.post(use: self.create)
@@ -50,9 +51,20 @@ struct MealController: RouteCollection {
         guard let user = try await User.find(payload.id, on: req.db) else {
             throw Abort(.notFound)
         }
+        
+        let queryParams = try req.query.decode(MealQuery.self)
 
-        let meals = try await Meal.query(on: req.db)
+        var query = Meal.query(on: req.db)
             .filter(\.$user.$id == user.id!)
+        
+        if let days = queryParams.days {
+            let calendar = Calendar.current
+            let startDate = calendar.startOfDay(for: Date())
+            let cutoffDate = calendar.date(byAdding: .day, value: -days + 1, to: startDate)!
+            query = query.filter(\.$date >= cutoffDate)
+        }
+        
+        let meals = try await query
             .with(\.$mealType)
             .sort(\.$date, .descending)
             .all()
