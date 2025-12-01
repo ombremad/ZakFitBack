@@ -16,6 +16,10 @@ struct FoodCreateDTO: Content {
     var mealId: UUID?
     
     func toModel(on db: any Database) async throws -> Food {
+        guard let _ = try await FoodType.find(foodTypeId, on: db) else {
+            throw Abort(.badRequest, reason: "FoodType with id '\(foodTypeId)' does not exist")
+        }
+        
         let model = Food()
         model.id = id ?? UUID()
         model.weight = weight

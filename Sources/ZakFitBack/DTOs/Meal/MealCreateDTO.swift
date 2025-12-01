@@ -25,9 +25,13 @@ struct MealCreateDTO: Content {
         
         try await model.save(on: db)
         
-        // Create all food
         for var foodCreateDTO in foods {
             foodCreateDTO.mealId = model.id!
+            
+            guard let _ = try await FoodType.find(foodCreateDTO.foodTypeId, on: db) else {
+                throw Abort(.badRequest, reason: "FoodType with id '\(foodCreateDTO.foodTypeId)' not found")
+            }
+            
             _ = try await foodCreateDTO.toModel(on: db)
         }
 

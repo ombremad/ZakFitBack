@@ -20,7 +20,6 @@ struct FoodTypeCreateDTO: Content {
     let restrictionTypes: [String]
     
     func toModel(on db: any Database) async throws -> FoodType {
-        // Validate that meal types exist
         var mealTypeModels: [MealType] = []
         for mealTypeName in mealTypes {
             guard let mealType = try await MealType.query(on: db)
@@ -31,7 +30,6 @@ struct FoodTypeCreateDTO: Content {
             mealTypeModels.append(mealType)
         }
         
-        // Validate that restriction types exist
         var restrictionTypeModels: [RestrictionType] = []
         for restrictionTypeName in restrictionTypes {
             guard let restrictionType = try await RestrictionType.query(on: db)
@@ -43,7 +41,6 @@ struct FoodTypeCreateDTO: Content {
         }
 
         let model = FoodType()
-
         model.id = id ?? UUID()
         model.name = name
         model.calsRatio = calsRatio
@@ -54,24 +51,12 @@ struct FoodTypeCreateDTO: Content {
         
         try await model.save(on: db)
         
-        // Attach meal types
-        for mealTypeName in mealTypes {
-            guard let mealType = try await MealType.query(on: db)
-                .filter(\.$name == mealTypeName)
-                .first() else {
-                throw Abort(.badRequest, reason: "MealType '\(mealTypeName)' not found")
-            }
-            try await model.$mealTypes.attach(mealType, on: db)
+        if !mealTypeModels.isEmpty {
+            try await model.$mealTypes.attach(mealTypeModels, on: db)
         }
         
-        // Attach restriction types
-        for restrictionTypeName in restrictionTypes {
-            guard let restrictionType = try await RestrictionType.query(on: db)
-                .filter(\.$name == restrictionTypeName)
-                .first() else {
-                throw Abort(.badRequest, reason: "RestrictionType '\(restrictionTypeName)' not found")
-            }
-            try await model.$restrictionTypes.attach(restrictionType, on: db)
+        if !restrictionTypeModels.isEmpty {
+            try await model.$restrictionTypes.attach(restrictionTypeModels, on: db)
         }
         
         return model

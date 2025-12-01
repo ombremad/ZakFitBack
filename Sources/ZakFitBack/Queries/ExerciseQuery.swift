@@ -11,7 +11,7 @@ import VaporToOpenAPI
 
 @OpenAPIDescriptable
 struct ExerciseQuery: Content {
-    // Filter exercises from the last N days (e.g., 1 = today only, 30 = last 30 days)
+    // Filter exercises from the last N days (1 = today only, 30 = last 30 days)
     var days: Int?
     
     // Filter by exercise type ID

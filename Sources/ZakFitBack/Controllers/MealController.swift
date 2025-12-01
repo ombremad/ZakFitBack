@@ -94,6 +94,12 @@ struct MealController: RouteCollection {
         try await meal.$mealType.load(on: req.db)
         try await meal.$foods.load(on: req.db)
         
+        for food in meal.foods {
+            try await food.$foodType.load(on: req.db)
+            try await food.foodType.$mealTypes.load(on: req.db)
+            try await food.foodType.$restrictionTypes.load(on: req.db)
+        }
+        
         return meal.toDTO()
     }
     
