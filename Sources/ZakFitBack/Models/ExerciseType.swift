@@ -35,6 +35,7 @@ final class ExerciseType: Model, @unchecked Sendable {
     
     func toListItemDTO() -> ExerciseTypeListItemDTO {
         .init(
+            id: self.id!,
             name: self.name,
             icon: self.icon
         )
