@@ -33,11 +33,13 @@ final class ExerciseType: Model, @unchecked Sendable {
         )
     }
     
-    func toListItemDTO() -> ExerciseTypeListItemDTO {
+    func toListItemDTO() -> ExerciseTypeResponseDTO {
         .init(
             id: self.id!,
             name: self.name,
-            icon: self.icon
+            icon: self.icon,
+            calsPerMinute: self.calsPerMinute,
+            level: self.level
         )
     }
 }

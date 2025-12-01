@@ -13,9 +13,9 @@ struct ExerciseResponseDTO: Content {
     let date: Date
     let length: Int
     let cals: Int
-    let exerciseType: ExerciseTypeListItemDTO
+    let exerciseType: ExerciseTypeResponseDTO
     
-    init(id: UUID, date: Date, length: Int, cals: Int, exerciseType: ExerciseTypeListItemDTO) {
+    init(id: UUID, date: Date, length: Int, cals: Int, exerciseType: ExerciseTypeResponseDTO) {
         self.id = id
         self.date = date
         self.length = length
