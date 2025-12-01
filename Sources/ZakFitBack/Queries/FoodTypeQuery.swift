@@ -11,9 +11,9 @@ import VaporToOpenAPI
 
 @OpenAPIDescriptable
 struct FoodTypeQuery: Content {
-    // Meal type names.
+    // Filter by meal type names.
     var mealTypes: [String]?
     
-    // Restriction type names. Reverse-filter: results only include food that do not match any restriction.
+    // Filter by restriction type names. Reverse-filter: results only include food that do not match any restriction.
     var restrictionTypes: [String]?
 }

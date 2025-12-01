@@ -21,4 +21,15 @@ final class Exercise: Model, @unchecked Sendable {
     @Parent(key: "id_exercise_type") var exerciseType: ExerciseType
     
     init() {}
+    
+    func toDTO() -> ExerciseResponseDTO {
+        .init(
+            id: self.id!,
+            date: self.date,
+            length: self.length,
+            cals: self.cals,
+            exerciseType: self.exerciseType.toListItemDTO()
+        )
+    }
+
 }

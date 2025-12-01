@@ -18,7 +18,7 @@ struct FoodTypeController: RouteCollection {
         protected.get(use: self.index)
             .openAPI(
                 summary: "Get food types",
-                description: "Get a list of all food types available",
+                description: "Get a list of all food types available, with filter options",
                 query: .type(FoodTypeQuery.self),
                 response: .type([FoodTypeListItemDTO].self)
             )
