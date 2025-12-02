@@ -25,7 +25,8 @@ final class Food: Model, @unchecked Sendable {
         .init(
             id: self.id!,
             weight: self.weight,
-            quantity: self.quantity
+            quantity: self.quantity,
+            foodType: self.foodType.toDTO()
         )
     }
 }

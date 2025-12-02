@@ -12,4 +12,5 @@ struct FoodResponseDTO: Content {
     let id: UUID
     let weight: Int
     let quantity: Int?
+    let foodType: FoodTypeResponseDTO
 }
