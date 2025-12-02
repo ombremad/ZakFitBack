@@ -12,7 +12,7 @@ import JWT
 struct UserController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let users = routes.grouped("users")
-
+        
         users.post("signup", use: self.signup)
             .openAPI(
                 summary: "Create User",
@@ -21,7 +21,7 @@ struct UserController: RouteCollection {
                 response: .type(TokenDTO.self)
             )
             .openAPINoAuth()
-
+        
         users.post("login", use: self.login)
             .openAPI(
                 summary: "Login User",
@@ -47,7 +47,7 @@ struct UserController: RouteCollection {
                 response: .type(UserPublicDTO.self)
             )
     }
-
+    
     @Sendable
     func signup(req: Request) async throws -> TokenDTO {
         var userDTO = try req.content.decode(UserCreateDTO.self)
@@ -105,14 +105,16 @@ struct UserController: RouteCollection {
     @Sendable
     func get(req: Request) async throws -> UserPublicDTO {
         let payload = try req.auth.require(UserPayload.self)
-        guard let user = try await User.find(payload.id, on: req.db) else {
+        guard let user = try await User.query(on: req.db)
+            .filter(\.$id == payload.id)
+            .with(\.$restrictionTypes)
+            .first() else {
             throw Abort(.notFound)
         }
-//        try await user.$restrictionTypes.load(on: req.db)
-
+        
         return user.toDTO()
     }
-
+    
     @Sendable
     func patch(req: Request) async throws -> UserPublicDTO {
         let payload = try req.auth.require(UserPayload.self)
@@ -121,8 +123,11 @@ struct UserController: RouteCollection {
         if patch.isEmpty {
             throw Abort(.badRequest, reason: "The request is empty.")
         }
-
-        guard let user = try await User.find(payload.id, on: req.db) else {
+        
+        guard let user = try await User.query(on: req.db)
+            .filter(\.$id == payload.id)
+            .with(\.$restrictionTypes)
+            .first() else {
             throw Abort(.notFound)
         }
         
@@ -133,18 +138,6 @@ struct UserController: RouteCollection {
         patch.apply(to: user)
         try await user.save(on: req.db)
         
-//        if let restrictionTypeIds = patch.restrictionTypeIds {
-//            try await user.$restrictionTypes.load(on: req.db)
-//            try await user.$restrictionTypes.detach(user.restrictionTypes, on: req.db)
-//            if !restrictionTypeIds.isEmpty {
-//                let restrictionTypes = try await RestrictionType.query(on: req.db)
-//                    .filter(\.$id ~~ restrictionTypeIds)
-//                    .all()
-//                try await user.$restrictionTypes.attach(restrictionTypes, on: req.db)
-//            }
-//        }
-//        try await user.$restrictionTypes.load(on: req.db)
-
         return user.toDTO()
     }
 }
