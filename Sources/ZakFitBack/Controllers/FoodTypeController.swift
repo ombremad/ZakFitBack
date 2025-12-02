@@ -20,7 +20,7 @@ struct FoodTypeController: RouteCollection {
                 summary: "Get food types",
                 description: "Get a list of all food types available, with filter options",
                 query: .type(FoodTypeQuery.self),
-                response: .type([FoodTypeListItemDTO].self)
+                response: .type([FoodTypeResponseDTO].self)
             )
         protected.post(use: self.create)
             .openAPI(
@@ -47,7 +47,7 @@ struct FoodTypeController: RouteCollection {
     }
     
     @Sendable
-    func index(req: Request) async throws -> [FoodTypeListItemDTO] {
+    func index(req: Request) async throws -> [FoodTypeResponseDTO] {
         let queryParams = try req.query.decode(FoodTypeQuery.self)
         
         let mealTypeFilters = (queryParams.mealTypes ?? [])
@@ -92,7 +92,7 @@ struct FoodTypeController: RouteCollection {
         }
         
         let foodTypes = try await query.sort(\.$name).all()
-        return foodTypes.map { FoodTypeListItemDTO(from: $0) }
+        return foodTypes.map { $0.toDTO() }
     }
         
     @Sendable
