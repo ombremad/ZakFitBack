@@ -12,6 +12,9 @@ struct MealCreateDTO: Content {
     var id: UUID?
     let date: Date
     let cals: Int
+    let carbs: Int
+    let fats: Int
+    let prots: Int
     let mealTypeId: UUID
     let foods: [FoodCreateDTO]
     
@@ -20,6 +23,9 @@ struct MealCreateDTO: Content {
         model.id = id ?? UUID()
         model.date = date
         model.cals = cals
+        model.carbs = carbs
+        model.fats = fats
+        model.prots = prots
         model.$mealType.id = mealTypeId
         model.$user.id = userId
         

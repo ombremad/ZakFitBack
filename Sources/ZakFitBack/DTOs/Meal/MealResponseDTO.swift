@@ -12,6 +12,9 @@ struct MealResponseDTO: Content {
     let id: UUID
     let date: Date
     let cals: Int
+    let carbs: Int
+    let fats: Int
+    let prots: Int
     let mealType: MealTypeDTO
     let foods: [FoodResponseDTO]
 }
