@@ -23,6 +23,7 @@ struct UserPatchDTO: Content {
     let goalCarbs: Int?
     let goalFats: Int?
     let goalProts: Int?
+    let restrictionTypeIds: [UUID]?
     
     var isEmpty: Bool {
         return firstName == nil &&
@@ -38,7 +39,8 @@ struct UserPatchDTO: Content {
         goalCals == nil &&
         goalCarbs == nil &&
         goalFats == nil &&
-        goalProts == nil
+        goalProts == nil &&
+        restrictionTypeIds == nil
     }
     
     func apply(to user: User) {

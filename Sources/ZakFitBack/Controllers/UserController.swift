@@ -138,6 +138,16 @@ struct UserController: RouteCollection {
         patch.apply(to: user)
         try await user.save(on: req.db)
         
+        if let restrictionTypeIds = patch.restrictionTypeIds {
+            let restrictions = try await RestrictionType.query(on: req.db)
+                .filter(\.$id ~~ restrictionTypeIds)
+                .all()
+            
+            try await user.$restrictionTypes.detachAll(on: req.db)
+            try await user.$restrictionTypes.attach(restrictions, on: req.db)
+            try await user.$restrictionTypes.load(on: req.db)
+        }
+        
         return user.toDTO()
     }
 }
