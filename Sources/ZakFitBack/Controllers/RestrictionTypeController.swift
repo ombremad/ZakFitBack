@@ -8,6 +8,7 @@
 import Vapor
 import Fluent
 import JWT
+import MySQLKit
 
 struct RestrictionTypeController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
@@ -41,10 +42,17 @@ struct RestrictionTypeController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [RestrictionTypeDTO] {
-        try await RestrictionType.query(on: req.db)
-            .sort(\.$name)
-            .all()
-            .map { $0.toDTO() }
+        guard let sql = req.db as? (any SQLDatabase) else {
+            throw Abort(.internalServerError)
+        }
+        
+        let results = try await sql.raw("""
+            SELECT * FROM restriction_type
+            ORDER BY name
+            """)
+            .all(decodingFluent: RestrictionType.self)
+        
+        return results.map { $0.toDTO() }
     }
     
     @Sendable
@@ -59,7 +67,17 @@ struct RestrictionTypeController: RouteCollection {
         }
         
         let newType = try req.content.decode(RestrictionTypeDTO.self).toModel()
-        try await newType.save(on: req.db)
+        
+        guard let sql = req.db as? (any SQLDatabase) else {
+            throw Abort(.internalServerError)
+        }
+
+        try await sql.raw("""
+            INSERT INTO restriction_type (id, name)
+            VALUES (\(bind: newType.id), \(bind: newType.name))
+            """
+        ).run()
+        
         return newType.toDTO()
     }
     
@@ -77,8 +95,17 @@ struct RestrictionTypeController: RouteCollection {
         guard let type = try await RestrictionType.find(req.parameters.get("restrictionTypeID"), on: req.db) else {
             throw Abort(.notFound)
         }
+        
+        guard let sql = req.db as? (any SQLDatabase) else {
+            throw Abort(.internalServerError)
+        }
 
-        try await type.delete(on: req.db)
+        try await sql.raw("""
+            DELETE FROM restriction_type
+            WHERE id = \(bind: type.id)
+            """
+        ).run()
+        
         return .noContent
     }
 }
