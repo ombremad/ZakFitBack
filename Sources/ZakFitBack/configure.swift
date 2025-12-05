@@ -16,12 +16,7 @@ public func configure(_ app: Application) async throws {
     ), as: .mysql)
     
     // MARK: CORS & Gatekeeper
-    //    let corsConfiguration = CORSMiddleware.Configuration(
-    //        allowedOrigin: .custom("http://localhost"),
-    //        allowedMethods: [.GET, .POST, .PATCH, .DELETE],
-    //        allowedHeaders: [.accept, .authorization, .contentType, .origin],
-    //        cacheExpiration: 800
-    //    )
+
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .none,
         allowedMethods: [],
@@ -33,7 +28,6 @@ public func configure(_ app: Application) async throws {
     
     // MARK: JSON strategies
     let encoder = JSONEncoder()
-//    encoder.keyEncodingStrategy = .convertToSnakeCase
     encoder.dateEncodingStrategy = .iso8601
     ContentConfiguration.global.use(encoder: encoder, for: .json)
     
